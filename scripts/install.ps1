@@ -4,33 +4,84 @@ $InstallDir = "$env:LOCALAPPDATA\msk\bin"
 $ExePath = Join-Path $InstallDir "msk.exe"
 $DownloadUrl = "https://github.com/SamiAlmouss/Msk/releases/latest/download/msk.exe"
 
-Write-Host "Installing msk..."
+try {
+    Write-Host "Installing msk..." -ForegroundColor Cyan
 
-New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
+    # Create installation directory
+    New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 
-Invoke-WebRequest `
-    -Uri $DownloadUrl `
-    -OutFile $ExePath
+    # Download latest release
+    Invoke-WebRequest `
+        -Uri $DownloadUrl `
+        -OutFile $ExePath `
+        -UseBasicParsing
 
-$UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    # Get current User PATH
+    $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
 
-if (($UserPath -split ";") -notcontains $InstallDir) {
-    $NewPath = if ([string]::IsNullOrWhiteSpace($UserPath)) {
-        $InstallDir
-    } else {
-        "$UserPath;$InstallDir"
+    # Normalize PATH entries
+    $PathEntries = @()
+
+    if (-not [string]::IsNullOrWhiteSpace($UserPath)) {
+        $PathEntries = $UserPath -split ";" |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
     }
 
-    [Environment]::SetEnvironmentVariable(
-        "Path",
-        $NewPath,
-        "User"
-    )
-}
+    # Add install directory to User PATH if missing
+    if ($PathEntries -notcontains $InstallDir) {
 
-if (($env:Path -split ";") -notcontains $InstallDir) {
-    $env:Path += ";$InstallDir"
-}
+        $NewPath = if ([string]::IsNullOrWhiteSpace($UserPath)) {
+            $InstallDir
+        }
+        else {
+            "$UserPath;$InstallDir"
+        }
 
-Write-Host "msk installed successfully."
-Write-Host "Installed to: $ExePath"
+        [Environment]::SetEnvironmentVariable(
+            "Path",
+            $NewPath,
+            "User"
+        )
+    }
+
+    # Add to current PowerShell session
+    if (($env:Path -split ";") -notcontains $InstallDir) {
+        $env:Path += ";$InstallDir"
+    }
+
+    # Verify executable exists
+    if (-not (Test-Path $ExePath)) {
+        throw "msk.exe was not found after installation."
+    }
+
+    # Logo
+    $Logo = @'
+╭─╮     ╭─╮ ╭───────╮ ╭─╮ ╭───╮
+│ ╰─╮ ╭─╯ │ │ ╭─────╯ │ ╰─╯ ╭─╯
+│   ╰─╯   │ │ ╰─────╮ │   ╭─╯
+│ ╭─────╮ │ ╰─────╮ │ │   ╰─╮
+│ │     │ │ ╭─────╯ │ │ ╭─╮ ╰─╮
+╰─╯     ╰─╯ ╰───────╯ ╰─╯ ╰───╯
+'@
+
+    Clear-Host
+
+    Write-Host $Logo -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "msk installed successfully!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Installed to:" -ForegroundColor DarkGray
+    Write-Host "  $ExePath" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Try:" -ForegroundColor DarkGray
+    Write-Host "  msk --help" -ForegroundColor Yellow
+    Write-Host ""
+
+}
+catch {
+    Write-Host ""
+    Write-Host "Installation failed!" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host ""
+    exit 1
+}
