@@ -1,0 +1,14 @@
+TVSnake/
+├── settings.gradle.kts
+├── build.gradle.kts
+├── gradle.properties
+└── app/
+    ├── build.gradle.kts
+    └── src/main/
+        ├── AndroidManifest.xml
+        ├── java/com/example/tvsvnake/
+        │   ├── MainActivity.kt
+        │   └── GameView.kt
+        └── res/
+            ├── values/strings.xml
+            └── drawable/app_banner.xml

@@ -1,0 +1,32 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.8'
+          cache: false
+      - run: go test ./...
+      - run: go vet ./...
+      - name: Package release
+        shell: pwsh
+        run: ./scripts/build.ps1 -Version $env:GITHUB_REF_NAME -Commit $env:GITHUB_SHA
+      - name: Test installation of release assets
+        shell: pwsh
+        run: ./scripts/test-install.ps1 -Version $env:GITHUB_REF_NAME
+      - name: Publish release assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create $env:GITHUB_REF_NAME dist/msk_*_windows_*.zip dist/checksums.txt --verify-tag --generate-notes
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed.' }
