@@ -1,14 +1,92 @@
 # msk
 
-Free, MIT-licensed project structure CLI, written in Go. Windows comes first:
-the ready-made `msk.exe` needs no Go, Python, Rust, .NET, npm, or Gradle.
-It creates **directories and empty files only**, converts between text trees
-and a brace notation, and scans existing directories without reading file contents.
-Existing files keep their contents and permissions. Nothing is deleted or overwritten
-inside a generated project. Source, tests, scripts and CI are included; no release
-or public download has been published as part of creating this project.
+Free, MIT-licensed project structure CLI, written in Go.
 
-## Quick start
+**Windows comes first:** the ready-made `msk.exe` requires no Go, Python, Rust,
+.NET, npm, or Gradle.
+
+`msk` creates **directories and empty files only**, converts between text trees
+and a compact brace notation, and scans existing directories without reading
+file contents.
+
+Existing files keep their contents and permissions. Nothing is deleted or
+overwritten inside a generated project.
+
+---
+
+## 🚀 Installation
+
+### Windows PowerShell
+
+Install the latest version of `msk` with one command:
+
+```powershell
+irm https://msk-install.pages.dev | iex
+```
+
+The installer:
+
+- Downloads the latest `msk.exe` release from GitHub.
+- Installs it into `%LOCALAPPDATA%\msk\bin`.
+- Adds the installation directory to the current user's `PATH`.
+- Does not require Administrator privileges.
+- Can be run again to update or reinstall `msk`.
+
+After installation, verify it with:
+
+```powershell
+msk --help
+```
+
+or:
+
+```powershell
+msk --version
+```
+
+### Installation location
+
+On Windows, `msk` is installed to:
+
+```text
+%LOCALAPPDATA%\msk\bin\msk.exe
+```
+
+### Direct installer source
+
+The short installation URL redirects to the installer stored in this repository:
+
+```text
+https://raw.githubusercontent.com/SamiAlmouss/Msk/main/scripts/install.ps1
+```
+
+You can also run the installer directly:
+
+```powershell
+irm https://raw.githubusercontent.com/SamiAlmouss/Msk/main/scripts/install.ps1 | iex
+```
+
+> [!NOTE]
+> Running a remote PowerShell script executes code from the internet.
+> You can review `scripts/install.ps1` in this repository before running it.
+
+### Direct executable download
+
+The latest Windows executable is available from GitHub Releases:
+
+```text
+https://github.com/SamiAlmouss/Msk/releases/latest/download/msk.exe
+```
+
+GitHub Releases:
+
+```text
+https://github.com/SamiAlmouss/Msk/releases
+```
+
+---
+
+## ⚡ Quick start
 
 Run commands from the directory where the new project belongs:
 
@@ -22,11 +100,92 @@ msk tree.txt --preview
 msk tree.txt --output "D:\Projects"
 ```
 
-For a root named `TVSnake/`, running in `D:\Projects` creates `D:\Projects\TVSnake`.
+For a root named `TVSnake/`, running in:
+
+```text
+D:\Projects
+```
+
+creates:
+
+```text
+D:\Projects\TVSnake
+```
+
 The working directory never changes and the executable's directory is irrelevant.
-`--output` may be absolute; missing destination directories are planned and created.
-Success reports created directories, created files, existing items kept, and destination.
-Failure during execution lists paths created before the failure; execution is not atomic.
+
+`--output` may be absolute; missing destination directories are planned and
+created.
+
+Success reports:
+
+- Created directories
+- Created files
+- Existing items kept
+- Destination
+
+Failure during execution lists paths created before the failure; execution is
+not atomic.
+
+---
+
+## 📋 Create from Clipboard
+
+Copy a project structure:
+
+```text
+TestProject/
+├── README.md
+├── src/
+│   ├── main.go
+│   └── utils.go
+└── docs/
+    └── usage.md
+```
+
+Open PowerShell in the directory where you want the project to be created and run:
+
+```powershell
+msk
+```
+
+`msk` reads the structure directly from the Windows Clipboard and creates it in
+the current directory.
+
+---
+
+## 📄 Create from a file
+
+Save a tree structure to any UTF-8 text file, for example:
+
+```text
+tree.txt
+```
+
+Then run:
+
+```powershell
+msk tree.txt
+```
+
+You can also specify another output directory:
+
+```powershell
+msk tree.txt --output "D:\Projects"
+```
+
+Preview the result without creating anything:
+
+```powershell
+msk tree.txt --preview
+```
+
+---
+
+## 🔄 Convert and scan
+
+`msk` can convert between tree and compact formats and can generate a structure
+description from an existing directory:
 
 ```powershell
 msk convert tree.txt --compact
@@ -35,6 +194,7 @@ msk convert --clipboard --compact
 msk convert --clipboard --tree
 msk convert tree.txt --compact --save compact.txt
 msk convert tree.txt --compact --save compact.txt --overwrite-output
+
 msk scan . --tree
 msk scan . --compact
 msk scan "D:\Projects\TVSnake" --tree
@@ -44,31 +204,85 @@ msk scan . --tree --exclude .git --exclude node_modules
 msk scan . --tree --max-depth 3
 ```
 
-`scan` defaults to tree; `convert` requires exactly one of `--tree` and `--compact`.
-Both commands also accept `--copy`, `--save FILE`, and `--overwrite-output`.
-Options work before and after positional arguments. `--` ends options; use it
-for filenames beginning with `-` or named `scan`/`convert`, e.g.
-`msk --preview -- -tree.txt`. Unknown options, conflicting formats and extra
-arguments fail. No interactive prompts are required.
+`scan` defaults to tree format.
 
-Converted/scanned text goes to stdout with no banners or colors. Compact output
-contains no newline; tree output ends with a newline. Diagnostics, save/copy
-confirmations and depth warnings go to stderr. `--save` writes UTF-8 without BOM;
-stdout still contains the result. Output files are exclusive by default; the
-explicit overwrite switch affects only conversion/scan output. Results are staged,
-flushed, then published. Exclusive publication uses a hard link and requires a
-filesystem supporting hard links (NTFS on Windows); overwrite uses a rename.
-PowerShell 5.1 redirection may re-encode native output; prefer `--save` for UTF-8.
+`convert` requires exactly one of:
 
-Exit codes: **0** success; **1** filesystem, Clipboard or execution failure;
-**2** command usage or invalid structure text.
+```text
+--tree
+--compact
+```
 
-## Tree format
+Both commands also accept:
 
-One directory root, with `├── ` or `└── ` before descendants. Each indentation
-unit is exactly `│   ` or four spaces, counted as text columns rather than UTF-8
-bytes. LF, CRLF, UTF-8 BOM and blank lines are accepted. Invalid indentation
-jumps and unexpected extra text are errors, with line numbers.
+```text
+--copy
+--save FILE
+--overwrite-output
+```
+
+Options work before and after positional arguments.
+
+`--` ends option parsing. Use it for filenames beginning with `-` or named
+`scan` / `convert`, for example:
+
+```powershell
+msk --preview -- -tree.txt
+```
+
+Unknown options, conflicting formats, and extra arguments fail.
+
+No interactive prompts are required.
+
+Converted/scanned text goes to stdout with no banners or colors.
+
+Compact output contains no newline; tree output ends with a newline.
+
+Diagnostics, save/copy confirmations, and depth warnings go to stderr.
+
+`--save` writes UTF-8 without BOM; stdout still contains the result.
+
+Output files are exclusive by default; the explicit overwrite switch affects
+only conversion/scan output.
+
+Results are staged, flushed, then published. Exclusive publication uses a hard
+link and requires a filesystem supporting hard links (NTFS on Windows);
+overwrite uses a rename.
+
+PowerShell 5.1 redirection may re-encode native output; prefer `--save` for
+UTF-8.
+
+### Exit codes
+
+| Code | Meaning |
+|---:|---|
+| `0` | Success |
+| `1` | Filesystem, Clipboard, or execution failure |
+| `2` | Command usage or invalid structure text |
+
+---
+
+# Tree format
+
+A tree document contains one directory root, with `├── ` or `└── ` before
+descendants.
+
+Each indentation unit is exactly:
+
+```text
+│   
+```
+
+or four spaces.
+
+Indentation is counted as text columns rather than UTF-8 bytes.
+
+LF, CRLF, UTF-8 BOM, and blank lines are accepted.
+
+Invalid indentation jumps and unexpected extra text are errors and include line
+numbers.
+
+Example:
 
 ```text
 TVSnake/
@@ -87,20 +301,54 @@ TVSnake/
             └── drawable/app_banner.xml
 ```
 
-Paths in documents use `/`, even on Windows. A trailing `/` marks a directory;
-an item with children is also a directory. Other leaf items are files, regardless
-of extension: `Dockerfile` and `LICENSE` work. An empty directory needs its `/`.
-The root is always a directory. Intermediate components expand into directories.
-Shared directories such as `src/a.go` and `src/b.go` merge in first-seen order.
+Paths in documents use `/`, even on Windows.
+
+A trailing `/` marks a directory.
+
+An item with children is also a directory.
+
+Other leaf items are files regardless of extension, so names such as these work:
+
+```text
+Dockerfile
+LICENSE
+README
+```
+
+An empty directory needs its trailing `/`.
+
+The root is always a directory.
+
+Intermediate components expand into directories.
+
+Shared directories such as:
+
+```text
+src/a.go
+src/b.go
+```
+
+merge in first-seen order.
+
 Repeated file definitions and file/directory conflicts are rejected.
 
-Names keep internal and leading spaces; trailing spaces are rejected by Windows
-naming rules. No suffix comments are interpreted: `#` belongs to the name.
-A complete outer Markdown fence of exactly three backticks, optionally followed
-by `text`, may wrap the input; extra text outside the fence is rejected.
+Names keep internal and leading spaces.
 
-Tree extension: JSON double-quoted **individual components** can represent names
-with tree characters or leading spaces without ambiguity:
+Trailing spaces are rejected by Windows naming rules.
+
+No suffix comments are interpreted: `#` belongs to the name.
+
+A complete outer Markdown fence of exactly three backticks, optionally followed
+by `text`, may wrap the input.
+
+Extra text outside the fence is rejected.
+
+---
+
+## Quoted tree components
+
+JSON double-quoted **individual components** can represent names with tree
+characters or leading spaces without ambiguity:
 
 ```text
 "My Project"/
@@ -111,143 +359,310 @@ with tree characters or leading spaces without ambiguity:
 ```
 
 Output expands every level separately, uses four columns per indentation unit,
-marks every directory with `/`, and quotes names when needed. Empty directories,
-types, names and sibling order survive conversion.
+marks every directory with `/`, and quotes names when needed.
 
-## Compact format
+Empty directories, types, names, and sibling order survive conversion.
+
+---
+
+# Compact format
+
+The same structure can be represented using compact brace notation:
 
 ```text
 TVSnake/{settings.gradle.kts,build.gradle.kts,gradle.properties,app/{build.gradle.kts,src/main/{AndroidManifest.xml,java/com/example/tvsvnake/{MainActivity.kt,GameView.kt},res/{values/strings.xml,drawable/app_banner.xml}}}}
 ```
 
-Directories use `name/{children}`, commas separate children, and `/` separates
-path components. `empty/` is an empty directory and `EmptyProject/` an empty root.
-`name/{}` is also accepted as an empty directory. Whitespace outside quoted names
-is formatting and is ignored; use quotes to preserve spaces.
+Directories use:
+
+```text
+name/{children}
+```
+
+Commas separate children and `/` separates path components.
+
+An empty directory can be written as:
+
+```text
+empty/
+```
+
+An empty root can be:
+
+```text
+EmptyProject/
+```
+
+This is also accepted:
+
+```text
+name/{}
+```
+
+Whitespace outside quoted names is formatting and is ignored.
+
+Use quotes to preserve spaces:
 
 ```text
 "My Project"/{README.md,"source files"/{main.go},"notes, draft.txt",empty/}
 ```
 
-Quotes follow JSON escape rules, e.g. `"\u0645\u0644\u0641"` is an Arabic name.
-A quoted component is one name, never a whole path; encoded or literal `/` and
-`\` are prohibited inside names. Quotes do not bypass Windows validation (for
-example a decoded double quote remains forbidden). Missing braces, unclosed
-quotes, bad escapes, empty elements, extra commas and invalid paths report a
-position. Nesting and document size are bounded at 256 levels and 16 MiB.
+Quotes follow JSON escape rules.
 
-## Validation and filesystem safety
+For example:
 
-Windows naming rules are applied on all platforms for portable documents:
-no absolute/UNC paths, drive letters, `.`/`..`, empty components, control/NUL
-characters, `< > : " / \ | ? *`, reserved device names (including extensions),
-trailing spaces/dots or case-conflicting siblings. Names are never sanitized or
-silently changed. Names accepted by the text model may still exceed filesystem
-length limits, which result in a clear I/O error.
+```text
+"\u0645\u0644\u0641"
+```
 
-All input is validated before disk access for creation. A complete plan checks
-existing types and ancestor paths before writing. Existing files are kept;
-new files use exclusive creation. Every existing ancestor is inspected with
-`Lstat`, and Windows `FILE_ATTRIBUTE_REPARSE_POINT` covers junctions as well as
-symlinks. Checks run during planning, again before execution and before each item.
-No existing permissions are changed. Scan skips links/reparse points with stderr
-warnings, never follows them, and refuses a linked root or ancestor.
+represents an Arabic name.
+
+A quoted component is one name, never a whole path.
+
+Encoded or literal `/` and `\` are prohibited inside names.
+
+Quotes do not bypass Windows validation. For example, a decoded double quote
+remains forbidden.
+
+Missing braces, unclosed quotes, bad escapes, empty elements, extra commas, and
+invalid paths report a position.
+
+Nesting and document size are bounded at:
+
+```text
+256 levels
+16 MiB
+```
+
+---
+
+# Validation and filesystem safety
+
+Windows naming rules are applied on all platforms for portable documents.
+
+The following are rejected:
+
+- Absolute paths
+- UNC paths
+- Drive letters
+- `.` and `..`
+- Empty components
+- Control/NUL characters
+- `< > : " / \ | ? *`
+- Reserved Windows device names, including extensions
+- Trailing spaces or dots
+- Case-conflicting siblings
+
+Names are never sanitized or silently changed.
+
+Names accepted by the text model may still exceed filesystem length limits,
+which results in a clear I/O error.
+
+All input is validated before disk access for creation.
+
+A complete plan checks existing types and ancestor paths before writing.
+
+Existing files are kept.
+
+New files use exclusive creation.
+
+Every existing ancestor is inspected with `Lstat`, and Windows
+`FILE_ATTRIBUTE_REPARSE_POINT` covers junctions as well as symlinks.
+
+Checks run:
+
+1. During planning
+2. Again before execution
+3. Before each item
+
+No existing permissions are changed.
+
+Scan skips links/reparse points with stderr warnings, never follows them, and
+refuses a linked root or ancestor.
 
 These path checks narrow races but cannot eliminate concurrent malicious
-replacement between checking a path and opening/creating it. Do not generate or
-save into directories concurrently modified by untrusted processes. This version
-does not use kernel handle-relative traversal and does not claim full race protection.
+replacement between checking a path and opening/creating it.
+
+Do not generate or save into directories concurrently modified by untrusted
+processes.
+
+This version does not use kernel handle-relative traversal and does not claim
+full race protection.
+
+---
+
+## Scan behavior
 
 Scan sorts directories first, then files, using case-sensitive Go string order
-(lexicographic UTF-8 bytes) within each group. Hidden names are included.
-Repeated `--exclude NAME` matches the exact case-sensitive basename at any level,
-with no glob expansion. Root depth is zero; directories at `--max-depth` appear
-empty and stderr states that the result is depth-limited. Recreating that result
-does not recreate omitted descendants. Access failures and unrepresentable names
-fail the scan rather than silently producing a partial successful result.
-When `--save` is inside the scanned directory its exact output path is excluded
+(lexicographic UTF-8 bytes) within each group.
+
+Hidden names are included.
+
+Repeated:
+
+```text
+--exclude NAME
+```
+
+matches the exact case-sensitive basename at any level, with no glob expansion.
+
+Root depth is zero.
+
+Directories at `--max-depth` appear empty and stderr states that the result is
+depth-limited.
+
+Recreating a depth-limited result does not recreate omitted descendants.
+
+Access failures and unrepresentable names fail the scan rather than silently
+producing a partial successful result.
+
+When `--save` is inside the scanned directory, its exact output path is excluded
 automatically, including when the output already exists.
 
-Clipboard is isolated behind an interface, with direct Windows Unicode APIs,
-a hidden owner window, retry on busy access, and no shell evaluation of clipboard
-text. Clipboard errors and an empty/nontext Clipboard fail clearly. Other OSes
-support file input, scan and conversion; Clipboard is Windows-only.
+---
 
-## Install after publishing a release
+# Clipboard
 
-Set `GITHUB_OWNER` and `GITHUB_REPOSITORY` in `scripts/install.ps1` and replace
-those placeholders in these URLs. These URLs are templates, not current downloads.
-The installer uses the native Windows architecture (amd64 or arm64), a chosen
-tag or GitHub's latest release, downloads and verifies SHA-256 **before** replacing
-an installation, installs into `%LOCALAPPDATA%\msk\bin`, appends only that directory
-to user PATH without duplicates, and updates the invoking PowerShell session.
-No Administrator access or permanent ExecutionPolicy change is needed.
+Clipboard access is isolated behind an interface.
 
-Review and run the script (recommended):
+On Windows it uses:
+
+- Native Windows Unicode APIs
+- A hidden owner window
+- Retry logic when Clipboard access is busy
+- No shell evaluation of Clipboard text
+
+Clipboard errors and an empty/non-text Clipboard fail clearly.
+
+Other operating systems support:
+
+- File input
+- Scan
+- Conversion
+
+Clipboard input is currently Windows-only.
+
+---
+
+# 🔄 Update
+
+To update or reinstall `msk`, simply run the installer again:
 
 ```powershell
-$owner = 'GITHUB_OWNER'
-$repo = 'GITHUB_REPOSITORY'
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/$owner/$repo/main/scripts/install.ps1" -OutFile install.ps1
-Get-Content .\install.ps1
-& .\install.ps1 -GITHUB_OWNER $owner -GITHUB_REPOSITORY $repo -Version v1.0.0
-# Omit -Version to install latest; run again to update/reinstall.
+irm https://msk-install.pages.dev | iex
 ```
 
-Direct execution from the published link (only after you trust the repository):
+The installer downloads the executable from the latest GitHub Release and
+replaces the installed copy.
+
+You do not need to manually remove the previous version first.
+
+---
+
+# 🗑️ Uninstall
+
+The repository includes an uninstall script:
 
 ```powershell
-$owner = 'GITHUB_OWNER'; $repo = 'GITHUB_REPOSITORY'
-$script = (Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/$owner/$repo/main/scripts/install.ps1").Content
-& ([scriptblock]::Create($script)) -GITHUB_OWNER $owner -GITHUB_REPOSITORY $repo
+.\scripts\uninstall.ps1
 ```
 
-Use a tag or commit instead of `main` to pin the script. If local policy blocks
-execution, an allowed process-only invocation is
-`powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -GITHUB_OWNER OWNER -GITHUB_REPOSITORY REPO`.
-A child process updates the persistent user PATH, but cannot update its parent's
-session PATH: open a new shell afterward. Corporate policies may still prohibit
-script execution. The scripts support Windows PowerShell 5.1 and PowerShell 7;
-older TLS/proxy environments may require administrator-managed network setup.
+It removes only:
 
-Checksums prove archive consistency with the published checksum manifest; they
-do **not** prove publisher identity or replace a trusted code signature. Assets
-and checksum manifest currently come from the same GitHub release.
-Locked/running executables produce an instruction to close msk and retry.
-Temporary downloads and staged replacements are cleaned up.
+- `msk.exe`
+- Empty `msk` installation directories
+- The `msk` bin directory from the user `PATH`
 
-Uninstall using the reviewed repository script:
+Other files and unrelated `PATH` entries are kept.
+
+It does not permanently change PowerShell ExecutionPolicy.
+
+If you cloned the repository, run:
 
 ```powershell
 & .\scripts\uninstall.ps1
 ```
 
-It removes only `msk.exe`, empty installation directories, and the msk bin PATH
-entry. Other files and PATH entries are kept. It does not change ExecutionPolicy.
+The default installation directory is:
 
-## Build and test
+```text
+%LOCALAPPDATA%\msk\bin
+```
 
-Use **Go 1.26.8**, with language baseline `go 1.26.0` in `go.mod` and the exact
-compiler version pinned in CI. No external modules are used, so no `go.sum` is needed.
+---
+
+# 📦 Releases
+
+Public releases are published through GitHub Releases:
+
+```text
+https://github.com/SamiAlmouss/Msk/releases
+```
+
+The latest executable can be downloaded directly from:
+
+```text
+https://github.com/SamiAlmouss/Msk/releases/latest/download/msk.exe
+```
+
+Current initial public release:
+
+```text
+v0.1.0
+```
+
+The short installer endpoint is:
+
+```text
+https://msk-install.pages.dev
+```
+
+which allows installation with:
+
+```powershell
+irm https://msk-install.pages.dev | iex
+```
+
+---
+
+# Build and test
+
+The project uses **Go 1.26.8**, with language baseline `go 1.26.0` in `go.mod`
+and the exact compiler version pinned in CI.
+
+No external modules are used, so no `go.sum` is needed.
 
 ```powershell
 go test ./...
 go vet ./...
 go build -o msk.exe ./cmd/msk
+
 .\msk.exe --help
 .\msk.exe examples\tree.txt --preview
 .\msk.exe examples\tree.txt --output .\sandbox
 .\msk.exe convert examples\compact.txt --tree
 .\msk.exe scan .\sandbox\TVSnake --compact
+
 go test ./internal/parser -run '^$' -fuzz FuzzParsers -fuzztime 10s -parallel 2
+
 & .\scripts\build.ps1 -Version v1.0.0 -Commit unknown
 & .\scripts\test-install.ps1 -Version v1.0.0
 ```
 
-Build output is `dist/windows_amd64/msk.exe` and `dist/windows_arm64/msk.exe`.
-`build.ps1` restores environment settings after building and embeds version,
-commit and UTC build date. Release archives contain executable, MIT license and
-README at archive root:
+Build output includes:
+
+```text
+dist/windows_amd64/msk.exe
+dist/windows_arm64/msk.exe
+```
+
+`build.ps1` restores environment settings after building and embeds:
+
+- Version
+- Commit
+- UTC build date
+
+The release build system can create:
 
 ```text
 msk_v1.0.0_windows_amd64.zip
@@ -256,68 +671,258 @@ checksums.txt
 ```
 
 `test-install.ps1` uses local release assets and an isolated temporary
-LOCALAPPDATA, disables real PATH writes, and tests install/reinstall, checksum
-failure preserving the existing binary, PATH string operations, and uninstall.
-Run it in both PowerShell editions; CI does so. It does not require Pester.
+`LOCALAPPDATA`, disables real PATH writes, and tests:
 
-Tests cover examples, Unicode, quoting, short paths, merging, ordering, invalid
-input, round trips, parser fuzzing, CLI streams/codes, temporary-disk creation,
-preservation, no-write preview/preflight, scan filters/depth/save exclusion and
-links. Symlink/junction tests explicitly skip if platform privileges prevent setup.
+- Install
+- Reinstall
+- Checksum failure
+- Preservation of the existing binary
+- PATH string operations
+- Uninstall
+
+Run it in both PowerShell editions; CI does so.
+
+It does not require Pester.
+
+Tests cover:
+
+- Examples
+- Unicode
+- Quoting
+- Short paths
+- Directory merging
+- Ordering
+- Invalid input
+- Round trips
+- Parser fuzzing
+- CLI streams and exit codes
+- Temporary-disk creation
+- Existing file preservation
+- No-write preview/preflight
+- Scan filters
+- Scan depth
+- Save exclusion
+- Links
+
+Symlink/junction tests explicitly skip if platform privileges prevent setup.
+
 Clipboard unit tests use a fake and do not disturb the user's real Clipboard.
+
 A Windows native Clipboard test allocates a private window station and desktop,
-so it never reads or modifies the user's Clipboard. It skips explicitly if Windows
-denies creation of that isolated desktop. Interactive desktop Clipboard and native
-ARM64 execution require their respective environments; cross compilation alone
-does not establish native runtime behavior.
+so it never reads or modifies the user's Clipboard.
 
-## Publish the first real release
+It skips explicitly if Windows denies creation of that isolated desktop.
 
-1. Create your GitHub repository and copy this project into it.
-2. Replace installer `GITHUB_OWNER` / `GITHUB_REPOSITORY` defaults and README URL
-   placeholders with your real values; confirm the default branch in script URLs.
-3. Commit and push; confirm CI succeeds on Windows and Linux, and inspect outputs.
-4. Tag and push `v1.0.0`. The release workflow tests, packages both Windows
-   architectures, computes `checksums.txt`, and publishes via GitHub CLI.
-5. Check asset names and SHA-256 entries, test installation against that release,
-   then distribute the actual raw-script link. No publication has happened locally.
+Interactive desktop Clipboard and native ARM64 execution require their
+respective environments; cross compilation alone does not establish native
+runtime behavior.
 
-CI uses read-only repository permissions. Only the tag release job gets
-`contents: write` to publish; no extra scopes or secrets are required.
+---
 
-## Source layout and decisions
+# GitHub Actions and releases
 
-`cmd/msk` is the executable entry point. `internal/cli` handles options and sources;
-`model` validates the ordered tree; `parser` parses both grammars; `formatter`
-serializes them; `filesystem` plans, executes, scans and stages output; `clipboard`
-contains the Windows-specific adapter. `examples` holds the matching TVSnake
-documents, `scripts` builds/installs/uninstalls/tests distribution, and `.github`
-holds CI and tag releases. Platform-independent logic uses only the Go standard
-library. Shared directory declarations merge; duplicate files never do.
+The project includes:
 
-Licensed under [MIT](LICENSE).
+```text
+.github/workflows/ci.yml
+.github/workflows/release.yml
+```
 
-## Verification of this implementation (2026-10-01)
+CI is used to test the project automatically.
 
-Executed locally on Windows amd64 with Go 1.26.8:
+The release workflow is designed to build release artifacts when a version tag
+is published.
 
-- `go test -count=1 ./...`: passed all available tests. Native symlink creation
-  skipped because the token lacks that privilege; junction safety passed.
-- `go vet ./...`: passed.
-- Parser fuzzing with round-trip assertions, 10 seconds/two workers: passed,
-  109,384 executions in the recorded run.
-- Release build: both Windows amd64 and arm64 executables and ZIPs created,
-  with metadata and matching SHA-256 manifest.
-- Actual amd64 executable: help/version, creation from both TVSnake examples,
-  scan comparison, and repeat execution all passed. Both formats yielded the
-  same structure, and repeat execution skipped all 20 existing project items.
-- Offline installer tests passed in PowerShell 7 and Windows PowerShell 5.1:
-  install/reinstall, locked-file rejection, missing/corrupt checksum rejection,
-  preservation of installed binary, PATH deduplication/removal, and uninstall.
+Typical release flow:
 
-Not established locally: Linux runtime (covered by prepared CI), native ARM64
-runtime, live GitHub release downloads/publication, or actual Clipboard round-trip.
-The native Clipboard test skipped because Windows denied creating its private
-window station, including outside the filesystem sandbox. Fake Clipboard CLI
-tests passed. Real user PATH writes are deliberately disabled in installer tests;
-the PATH transformation functions are tested without changing account settings.
+```powershell
+git add .
+git commit -m "Prepare release"
+git push
+```
+
+Create a version tag:
+
+```powershell
+git tag v0.1.1
+```
+
+Push the tag:
+
+```powershell
+git push origin v0.1.1
+```
+
+The release workflow can then build and publish the appropriate release
+artifacts.
+
+The installation URL does not need to change between versions:
+
+```powershell
+irm https://msk-install.pages.dev | iex
+```
+
+because the installer uses the latest published GitHub release.
+
+CI uses read-only repository permissions.
+
+Only the tag release job requires:
+
+```text
+contents: write
+```
+
+to publish releases.
+
+No additional repository secrets are required for normal GitHub release
+publishing with `GITHUB_TOKEN`.
+
+---
+
+# Source layout
+
+```text
+Msk/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── release.yml
+├── cmd/
+│   └── msk/
+│       └── main.go
+├── examples/
+│   ├── compact.txt
+│   └── tree.txt
+├── internal/
+│   ├── cli/
+│   ├── clipboard/
+│   ├── filesystem/
+│   ├── formatter/
+│   ├── model/
+│   └── parser/
+├── scripts/
+│   ├── build.ps1
+│   ├── install.ps1
+│   ├── test-install.ps1
+│   └── uninstall.ps1
+├── .gitignore
+├── LICENSE
+├── README.md
+└── go.mod
+```
+
+`cmd/msk` is the executable entry point.
+
+`internal/cli` handles options and sources.
+
+`internal/model` validates the ordered tree.
+
+`internal/parser` parses both grammars.
+
+`internal/formatter` serializes them.
+
+`internal/filesystem` plans, executes, scans, and stages output.
+
+`internal/clipboard` contains the Windows-specific Clipboard adapter.
+
+`examples` contains sample tree and compact documents.
+
+`scripts` contains build, install, uninstall, and distribution test scripts.
+
+`.github` contains CI and release workflows.
+
+Platform-independent logic uses only the Go standard library.
+
+Shared directory declarations merge; duplicate files never do.
+
+---
+
+# Verification of this implementation
+
+The implementation was tested locally on Windows amd64 with Go 1.26.8.
+
+### Tests performed
+
+- `go test -count=1 ./...` passed all available tests.
+- Native symlink creation skipped where the current Windows token lacked that
+  privilege.
+- Junction safety tests passed.
+- `go vet ./...` passed.
+- Parser fuzzing with round-trip assertions ran for 10 seconds with two workers.
+- Release builds for Windows amd64 and arm64 were created locally.
+- Build metadata and SHA-256 generation were tested.
+- The actual amd64 executable was tested with:
+  - Help
+  - Version
+  - Creation from both TVSnake examples
+  - Scan comparison
+  - Repeat execution
+- Both text formats produced the same structure.
+- Repeat execution preserved existing project items.
+- Offline installer tests passed in PowerShell 7 and Windows PowerShell 5.1.
+- Install/reinstall behavior was tested.
+- Locked-file rejection was tested.
+- Missing/corrupt checksum rejection was tested by the distribution test suite.
+- Existing binary preservation was tested.
+- PATH deduplication/removal was tested.
+- Uninstall behavior was tested.
+- A public GitHub release has been created.
+- Installation through the published GitHub-hosted installer has been tested.
+- The short Cloudflare Pages installation endpoint is available at
+  `https://msk-install.pages.dev`.
+
+Native ARM64 runtime behavior still requires testing on ARM64 hardware.
+
+---
+
+# Requirements
+
+For the prebuilt Windows release:
+
+- Windows 10 or Windows 11
+- PowerShell
+- Internet connection during installation
+
+No development runtime is required to use the prebuilt executable.
+
+You do **not** need:
+
+- Go
+- Python
+- Rust
+- .NET SDK
+- Node.js
+- npm
+- Gradle
+
+Go is required only if you want to build `msk` from source.
+
+---
+
+# License
+
+Licensed under the [MIT License](LICENSE).
+
+---
+
+# Author
+
+Created by **SamiAlmouss**
+
+GitHub:
+
+```text
+https://github.com/SamiAlmouss
+```
+
+Project repository:
+
+```text
+https://github.com/SamiAlmouss/Msk
+```
+
+---
+
+## ⭐ Support
+
+If you find `msk` useful, consider giving the repository a ⭐ on GitHub.
