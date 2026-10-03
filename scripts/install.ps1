@@ -55,35 +55,54 @@ try {
     }
 
     Clear-Host
+    Write-Host ""
 
-$lines = @(
-    @{ Text = " _____                                   _____ "; Color = "White" }
-    @{ Text = "( ___ )---------------------------------( ___ )"; Color = "DarkGray" }
-    @{ Text = " |   |                                   |   | "; Color = "DarkGray" }
-    @{ Text = " |   |     __   __  _______  ___   _     |   | "; Color = "Yellow" }
-    @{ Text = " |   |    |  |_|  ||       ||   | | |    |   | "; Color = "Yellow" }
-    @{ Text = " |   |    |       ||  _____||   |_| |    |   | "; Color = "Red" }
-    @{ Text = " |   |    |       || |_____ |      _|    |   | "; Color = "Red" }
-    @{ Text = " |   |    |       ||_____  ||     |_     |   | "; Color = "Red" }
-    @{ Text = " |   |    | ||_|| | _____| ||    _  |    |   | "; Color = "DarkRed" }
-    @{ Text = " |   |    |_|   |_||_______||___| |_|    |   | "; Color = "DarkRed" }
-    @{ Text = " |___|                                   |___| "; Color = "Gray" }
-    @{ Text = "(_____)---------------------------------(_____)"; Color = "White" }
-)
+    # ============================================================
+    # MSK Logo
+    # M = Green
+    # S = Cyan
+    # K = Red
+    # ============================================================
 
-Write-Host ""
-foreach ($line in $lines) {
-    Write-Host $line.Text -ForegroundColor $line.Color
-}
-Write-Host ""
-Write-Host "msk installed successfully!" -ForegroundColor Green
-Write-Host ""
-Write-Host "Installed to:" -ForegroundColor DarkGray
-Write-Host "  $ExePath" -ForegroundColor White
-Write-Host ""
-Write-Host "Try:" -ForegroundColor DarkGray
-Write-Host "  msk --help" -ForegroundColor Cyan
-Write-Host ""
+    # Line 1
+    Write-Host "╭─╮     ╭─╮ " -NoNewline -ForegroundColor Green
+    Write-Host "╭───────╮ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "╭─╮ ╭───╮"    -ForegroundColor Red
+
+    # Line 2
+    Write-Host "│ ╰─╮ ╭─╯ │ " -NoNewline -ForegroundColor Green
+    Write-Host "│ ╭─────╯ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "│ ╰─╯ ╭─╯"    -ForegroundColor Red
+
+    # Line 3
+    Write-Host "│   ╰─╯   │ " -NoNewline -ForegroundColor Green
+    Write-Host "│ ╰─────╮ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "│   ╭─╯"      -ForegroundColor Red
+
+    # Line 4
+    Write-Host "│ ╭─────╮ │ " -NoNewline -ForegroundColor Green
+    Write-Host "╰─────╮ │ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "│   ╰─╮"      -ForegroundColor Red
+
+    # Line 5
+    Write-Host "│ │     │ │ " -NoNewline -ForegroundColor Green
+    Write-Host "╭─────╯ │ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "│ ╭─╮ ╰─╮"    -ForegroundColor Red
+
+    # Line 6
+    Write-Host "╰─╯     ╰─╯ " -NoNewline -ForegroundColor Green
+    Write-Host "╰───────╯ "   -NoNewline -ForegroundColor Cyan
+    Write-Host "╰─╯ ╰───╯"    -ForegroundColor Red
+
+    Write-Host ""
+    Write-Host "msk installed successfully!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Installed to:" -ForegroundColor DarkGray
+    Write-Host "  $ExePath" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Try:" -ForegroundColor DarkGray
+    Write-Host "  msk --help" -ForegroundColor Yellow
+    Write-Host ""
 
 }
 catch {
