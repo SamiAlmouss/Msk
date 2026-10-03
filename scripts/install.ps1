@@ -54,19 +54,16 @@ try {
         throw "msk.exe was not found after installation."
     }
 
-    # Logo
-    $Logo = @'
-╭─╮     ╭─╮ ╭───────╮ ╭─╮ ╭───╮
-│ ╰─╮ ╭─╯ │ │ ╭─────╯ │ ╰─╯ ╭─╯
-│   ╰─╯   │ │ ╰─────╮ │   ╭─╯
-│ ╭─────╮ │ ╰─────╮ │ │   ╰─╮
-│ │     │ │ ╭─────╯ │ │ ╭─╮ ╰─╮
-╰─╯     ╰─╯ ╰───────╯ ╰─╯ ╰───╯
-'@
-
     Clear-Host
 
-    Write-Host $Logo -ForegroundColor Cyan
+    Write-Host ""
+
+    Write-Host "▄▄▄▄▄▄▄  ▄▄▄▄▄▄ ▄▄▄ ▄▄▄" -ForegroundColor White
+    Write-Host "██ █ ██ ███ ▀▀▀ ███ ███" -ForegroundColor Yellow
+    Write-Host "██ ▀ ██  ▀▀▀██▄ ███▄██▀" -ForegroundColor Red
+    Write-Host "███ ███ ███▄███ ███ ███" -ForegroundColor Red
+    Write-Host "▀▀▀ ▀▀▀ ▀▀▀▀▀▀  ▀▀▀ ▀▀▀" -ForegroundColor DarkGray
+
     Write-Host ""
     Write-Host "msk installed successfully!" -ForegroundColor Green
     Write-Host ""
